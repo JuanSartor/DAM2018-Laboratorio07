@@ -10,7 +10,8 @@ export default class AppBanco extends Component {
             dias:0,
             switchStatus:false,
             checkBoxStatus:false,
-            tasaInteres:0.0
+            tasaInteres:0.0,
+            resultado:"[[ RESULTADO DE LA OPERACION ]]"
         };
         this.hacerPlazoFijo = this.hacerPlazoFijo.bind(this);
         this.calcularInteres = this.calcularInteres.bind(this);
@@ -18,50 +19,45 @@ export default class AppBanco extends Component {
     hacerPlazoFijo(){
         //ToastAndroid.show('Presiono el boton de hacer plazo fijo!', ToastAndroid.LONG);
         this.calcularInteres();
-        console.log("Exit"+this.state.tasaInteres);
-        let interes = this.state.capitalInicial * (Math.pow(1+(this.state.tasaInteres/100),this.state.dias/360)-1);
-        this.setState({capitalFinal:(this.state.capitalInicial+interes)});
+        //console.log(this.state.tasaInteres);
+        const auxState = this.state;
+        let interes = auxState.capitalInicial * (Math.pow(1+(auxState.tasaInteres),auxState.dias/360)-1);
+        auxState.capitalFinal = auxState.capitalInicial + interes;
+        auxState.resultado = "Al cabo de " + auxState.dias + " días obrendra $" + auxState.capitalFinal;
+        this.setState(auxState);
         console.log(this.state);
         ToastAndroid.show('Tasa de Interes: ' + this.state.tasaInteres, ToastAndroid.LONG);
     }
 
     calcularInteres(){
         console.log("Entramos en calcularInteres");
-        let auxTasaInteres = this.state.tasaInteres;
-        if(this.state.capitalInicial<5000){
-            if(this.state.dias<30){
+        const auxState = this.state;
+        let auxTasaInteres = 0;
+        if(auxState.capitalInicial<5000){
+            if(auxState.dias<30){
                 auxTasaInteres=0.25;
-                //this.setState({tasaInteres:0.25});
-                console.log(auxTasaInteres);
             }else{
                 auxTasaInteres=0.275;
-                //this.setState({tasaInteres:0.275});
-                console.log(auxTasaInteres);
             }
         }else{
-            if(this.state.capitalInicial<99999){
-                if(this.state.dias<30){
+            if(auxState.capitalInicial<99999){
+                if(auxState.dias<30){
                     auxTasaInteres=0.30
-                    //this.setState({tasaInteres:0.30});
-                    console.log(auxTasaInteres);
+                    
                 }else{
                     auxTasaInteres=0.323;
-                    //this.setState({tasaInteres:0.323});
-                    console.log(auxTasaInteres);
                 }
             }else{
-                if(this.state.dias<30){
+                if(auxState.dias<30){
                     auxTasaInteres=0.35;
-                    //this.setState({tasaInteres:0.35});
-                    console.log(auxTasaInteres);
                 }else{
                     auxTasaInteres=0.385;
-                    //this.setState({tasaInteres:0.385});
-                    console.log(auxTasaInteres);
                 }
             }
         }
-        this.setState({tasaInteres:auxTasaInteres});
+        //console.log(auxTasaInteres);
+        auxState.tasaInteres=auxTasaInteres;
+        this.setState(auxState);
     }
     
     procesarInput(name,value){
@@ -116,7 +112,7 @@ export default class AppBanco extends Component {
                 title="Hacer Plazo Fijo"
                 color="#FF0000"
                 onPress={this.hacerPlazoFijo}/>
-            <Text>[[ RESULTADO DE LA OPERACION ]]</Text>
+            <Text>{this.state.resultado}</Text>
         </View>
         );
     }
