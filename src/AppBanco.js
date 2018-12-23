@@ -11,22 +11,45 @@ export default class AppBanco extends Component {
             switchStatus:false,
             checkBoxStatus:false,
             tasaInteres:0.0,
-            resultado:"[[ RESULTADO DE LA OPERACION ]]"
+            resultado:"[[ RESULTADO DE LA OPERACION ]]",
+            email:"",
+            cuit:""
         };
         this.hacerPlazoFijo = this.hacerPlazoFijo.bind(this);
         this.calcularInteres = this.calcularInteres.bind(this);
     }
+    
     hacerPlazoFijo(){
-        //ToastAndroid.show('Presiono el boton de hacer plazo fijo!', ToastAndroid.LONG);
-        this.calcularInteres();
-        //console.log(this.state.tasaInteres);
-        const auxState = this.state;
-        let interes = auxState.capitalInicial * (Math.pow(1+(auxState.tasaInteres),auxState.dias/360)-1);
-        auxState.capitalFinal = auxState.capitalInicial + interes;
-        auxState.resultado = "Al cabo de " + auxState.dias + " días obrendra $" + auxState.capitalFinal;
-        this.setState(auxState);
-        console.log(this.state);
-        ToastAndroid.show('Tasa de Interes: ' + this.state.tasaInteres, ToastAndroid.LONG);
+        let correoExpReg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        let cuitExpReg = /^[0-9]{2}-[0-9]{8}-[0-9]{1}$/;
+
+        if(correoExpReg.test(this.state.email)){
+            //console.log('Correo valido');
+            if(cuitExpReg.test(this.state.cuit)){
+                //console.log('CUIT valido');
+                if(this.state.checkBoxStatus){
+                    //ToastAndroid.show('Presiono el boton de hacer plazo fijo!', ToastAndroid.LONG);
+                    this.calcularInteres();
+                    //console.log(this.state.tasaInteres);
+                    const auxState = this.state;
+                    let interes = auxState.capitalInicial * (Math.pow(1+(auxState.tasaInteres),auxState.dias/360)-1);
+                    auxState.capitalFinal = auxState.capitalInicial + interes;
+                    auxState.resultado = "Al cabo de " + auxState.dias + " días obrendra $" + auxState.capitalFinal;
+                    this.setState(auxState);
+                    console.log(this.state);
+                    //ToastAndroid.show('Tasa de Interes: ' + this.state.tasaInteres, ToastAndroid.LONG);
+                }else{
+                    ToastAndroid.show('Debe aceptar los terminos y condiciones', ToastAndroid.LONG);
+                }
+            }else{
+                //console.log('CUIT invalido');
+                ToastAndroid.show('Debe ingresar un CUIT valido', ToastAndroid.LONG);
+            }
+        }else{
+            //console.log('Correo invalido');
+            ToastAndroid.show('Debe Ingresar un correo valido', ToastAndroid.LONG);
+        }
+        
     }
 
     calcularInteres(){
@@ -71,11 +94,13 @@ export default class AppBanco extends Component {
             <TextInput
                 placeholder="correo@mail.com"
                 keyboardType={"email-address"}
-                textContentType={"emailAddress"}/>
+                textContentType={"emailAddress"}
+                onChangeText={(value) => this.setState({email:value})}/>
             <Text>CUIT</Text>
             <TextInput
                 placeholder="00-00000000-0"
-                keyboardType={"numeric"}/>
+                keyboardType={"numeric"}
+                onChangeText={(value) => this.setState({cuit:value})}/>
             <Text>Moneda</Text>
             <Picker
                 style={{width: 200}}
