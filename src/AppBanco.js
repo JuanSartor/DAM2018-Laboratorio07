@@ -33,8 +33,14 @@ export default class AppBanco extends Component {
                     //console.log(this.state.tasaInteres);
                     const auxState = this.state;
                     let interes = auxState.capitalInicial * (Math.pow(1+(auxState.tasaInteres),auxState.dias/360)-1);
+                    let divisa;
+                    if (auxState.moneda==1){
+                        divisa = "U$S";
+                    }else{
+                        divisa = "AR$"
+                    }
                     auxState.capitalFinal = auxState.capitalInicial + interes;
-                    auxState.resultado = "Al cabo de " + auxState.dias + " días obrendra $" + auxState.capitalFinal;
+                    auxState.resultado = "Al cabo de " + auxState.dias + " días obrendra " + divisa + " " + auxState.capitalFinal.toFixed(2);
                     this.setState(auxState);
                     console.log(this.state);
                     //ToastAndroid.show('Tasa de Interes: ' + this.state.tasaInteres, ToastAndroid.LONG);
@@ -82,26 +88,25 @@ export default class AppBanco extends Component {
         auxState.tasaInteres=auxTasaInteres;
         this.setState(auxState);
     }
-    
-    procesarInput(name,value){
-        this.setState({name:value});
-    }
 
     render() {
         return (
         <View style={styles.container}>
-            <Text>Correo Electronico</Text>
+            <Text style={styles.welcome}>Banco Movil</Text>
+            <Text style={styles.title}>Correo Electronico</Text>
             <TextInput
+                style={styles.content}
                 placeholder="correo@mail.com"
                 keyboardType={"email-address"}
                 textContentType={"emailAddress"}
                 onChangeText={(value) => this.setState({email:value})}/>
-            <Text>CUIT</Text>
+            <Text style={styles.title}>CUIT</Text>
             <TextInput
+                style={styles.content}
                 placeholder="00-00000000-0"
                 keyboardType={"numeric"}
                 onChangeText={(value) => this.setState({cuit:value})}/>
-            <Text>Moneda</Text>
+            <Text style={styles.title}>Moneda</Text>
             <Picker
                 style={{width: 200}}
                 selectedValue={this.state.moneda}
@@ -109,26 +114,27 @@ export default class AppBanco extends Component {
                 <Picker.Item label="Dolar" value="1" />
                 <Picker.Item label="Pesos ARS" value="2" />
             </Picker>
-            <Text>Monto</Text>
+            <Text style={styles.title}>Monto</Text>
             <TextInput
+                style={styles.content}
                 placeholder="000"
                 keyboardType={"decimal-pad"}
                 onChangeText={(value) => this.setState({capitalInicial:Number(value)})}/>
-            <Text>Dias</Text>
+            <Text style={styles.title}>Dias</Text>
             <Slider 
                 minimumValue={1}
                 maximumValue={365}
                 step={1}
-                onValueChange={(valor) => this.setState({dias:valor})}
-                style={{width: 200}}>
+                onValueChange={(valor) => this.setState({dias:valor})}>
             </Slider>
             <Text>{this.state.dias} días</Text>
-            <Text>Avisar por mail</Text>
+            <Text style={styles.title}>Avisar por e-Mail</Text>
             <Switch
-                title="Avisar por email"
+                //title="Avisar por email"
+                style={{alignSelf:"flex-start"}}
                 value={this.state.switchStatus}
                 onValueChange={(value) => this.setState({switchStatus:value})}/>
-            <Text>Acepto condiciones</Text>
+            <Text style={styles.title}>Acepto condiciones</Text>
             <CheckBox 
                 title='Acepto condiciones'
                 value={this.state.checkBoxStatus}
@@ -137,7 +143,7 @@ export default class AppBanco extends Component {
                 title="Hacer Plazo Fijo"
                 color="#FF0000"
                 onPress={this.hacerPlazoFijo}/>
-            <Text>{this.state.resultado}</Text>
+            <Text style={styles.result}>{this.state.resultado}</Text>
         </View>
         );
     }
@@ -146,12 +152,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        alignItems: 'stretch',
         backgroundColor: '#F5FCFF',
     },
     welcome: {
-        fontSize: 20,
+        fontSize: 25,
         textAlign: 'center',
         margin: 10,
     },
@@ -160,4 +166,17 @@ const styles = StyleSheet.create({
         color: '#333333',
         marginBottom: 5,
     },
+    title:{
+        fontSize: 18,
+        textAlign: 'left',
+    },
+    content:{
+        fontSize: 15,
+        textAlign: 'left',
+        color:'#808080',
+    },
+    result:{
+        fontSize:15,
+        margin:10
+    }
  });
